@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DSA Visualizer Pro</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="header">
+  <h2>&lt;/&gt; DSA Visualizer Pro</h2>
+  <div class="icons">
+    <button>☰</button><button>⬇</button><button>🔗</button>
+    <button>❓</button><button>📤</button><button>🌙</button>
+  </div>
+</header>
+
+<div class="app">
+  <aside class="sidebar">
+    <h4>Categories</h4>
+    <button onclick="loadCategory('sorting')">Sorting Algorithms</button>
+    <button onclick="loadCategory('searching')">Searching Algorithms</button>
+    <button onclick="loadCategory('tree')">Tree Traversals</button>
+    <button onclick="loadCategory('graph')">Graph Traversals</button>
+
+    <h4>Algorithms</h4>
+    <div id="algorithmList"></div>
+  </aside>
+
+  <main class="main">
+    <h1 id="algoTitle">Select an Algorithm</h1>
+    <div id="visualizer" class="visualizer">
+      <div class="visualizer-box">
+  <div id="barsContainer"></div>
+
+  <!-- Tree renderer -->
+  <svg id="treeCanvas" class="canvas hidden"></svg>
+
+  <!-- Graph renderer -->
+  <svg id="graphCanvas" class="canvas hidden"></svg>
+</div>
+
+    </div>
+
+    <!-- CONTROLS PANEL -->
+    <div class="panel controls-panel">
+      <div class="buttons">
+        <button onclick="startAlgorithm()" class="primary">▶ Start</button>
+        <button onclick="stopAlgorithm()">Stop</button>
+        <button onclick="resetAlgorithm()">Reset</button>
+        <button onclick="generateArray()">＋ New Array</button>
+      </div>
+
+      <div class="steps">
+        <button disabled>‹ Prev</button>
+        <span>Step 0 / 0</span>
+        <button disabled>Next ›</button>
+      </div>
+
+      <div class="sliders">
+        <div>
+          <label>Array Size: <span id="arraySizeLabel">30</span></label>
+          <input id="arraySize" type="range" min="5" max="60" value="30" oninput="updateArraySize()">
+        </div>
+        <div>
+          <label>Speed: <span id="speedLabel">50%</span></label>
+          <input id="speed" type="range" min="1" max="100" value="50" oninput="updateSpeed()">
+        </div>
+      </div>
+      
+    </div>
+
+    <!-- STATS -->
+    <div class="panel stats-panel">
+      <div class="stat">
+        <p>TIME COMPLEXITY</p>
+        <h3 id="time">-</h3>
+      </div>
+      <div class="stat">
+        <p>SPACE COMPLEXITY</p>
+        <h3 id="space">-</h3>
+      </div>
+      <div class="stat">
+        <p>COMPARISONS</p>
+        <h3 id="comparisons">0</h3>
+      </div>
+      <div class="stat">
+        <p>SWAPS</p>
+        <h3 id="swaps">0</h3>
+      </div>
+    </div>
+
+    <!-- LEGEND -->
+    <div class="panel legend">
+      <div><span class="box unsorted"></span> Unsorted</div>
+      <div><span class="box comparing"></span> Comparing</div>
+      <div><span class="box sorted"></span> Sorted</div>
+    </div>
+
+    <!-- ABOUT -->
+    <div class="panel about">
+      <h3 id="aboutTitle">About</h3>
+      <p id="description"></p>
+    </div>
+    <div class="panel about">
+      <h3 id="aboutTitle">Algorithm</h3>
+      <p id="algo"></p>
+    </div>
+  </main>
+</div>
+
+<script src="script.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+const sidebar = document.querySelector('.sidebar');
+const btnSidebar = document.querySelector('.icons button:nth-child(1)');
+const btnDownload = document.querySelector('.icons button:nth-child(2)');
+const btnShare = document.querySelector('.icons button:nth-child(3)');
+const btnHint = document.querySelector('.icons button:nth-child(4)');
+const btnExport = document.querySelector('.icons button:nth-child(5)');
+const btnTheme = document.querySelector('.icons button:nth-child(6)');
+
+// 1️⃣ Toggle Sidebar
+btnSidebar.addEventListener('click', () => {
+  sidebar.style.display = sidebar.style.display === 'none' ? 'flex' : 'none';
+});
+
+// 2️⃣ Download visualizer as image
+btnDownload.addEventListener('click', () => {
+  html2canvas(document.querySelector('.main')).then(canvas => {
+    const link = document.createElement('a');
+    link.download = 'dsa_visualizer.png';
+    link.href = canvas.toDataURL();
+    link.click();
+  });
+});
+
+// 3️⃣ Share current link
+btnShare.addEventListener('click', () => {
+  navigator.clipboard.writeText(window.location.href).then(() => {
+    alert('Link copied!');
+  });
+});
+
+// 4️⃣ Show hint
+btnHint.addEventListener('click', () => {
+  alert('Hint: Compare and swap bars step by step according to the algorithm.');
+});
+
+// 5️⃣ Export visualization data
+btnExport.addEventListener('click', () => {
+  const data = { bars: Array.from(document.querySelectorAll('.bar')).map(b => b.style.height) };
+  const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'visualizer_data.json';
+  link.click();
+  URL.revokeObjectURL(url);
+});
+
+// 6️⃣ Toggle Light/Dark Theme
+btnTheme.addEventListener('click', () => {
+  document.body.classList.toggle('light-theme');
+});
+</script>
+
+</body>
+</html>
